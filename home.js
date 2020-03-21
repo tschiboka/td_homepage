@@ -13,8 +13,20 @@ function startHome() {
     elems.activityMeterIcon = document.querySelector(".activity-meter__icon");
     elems.activityMeterDisplay = document.querySelector(".activity-meter__display");
 
-    // add eventListeners
-    elems.activityMeterIcon.addEventListener("click", handleActivityMeterClick);
+    elems.activityMeter.addEventListener("click", e => handleActivityMeterClickEventDelegation(e));
+}
+
+
+
+function handleActivityMeterClickEventDelegation(e) {
+    const origin = (e.target.classList[0] || "").replace(/activity-meter__/g, "");
+
+    switch (origin) {
+        case "icon": { }
+        case "icon-box": { }
+        case "icon-part": { handleActivityMeterClick(); break; }
+    }
+    console.log(origin);
 }
 
 
