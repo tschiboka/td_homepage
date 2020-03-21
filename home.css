@@ -28,42 +28,40 @@ body {
     background: #0b090c;
 }
 
-.activity-counter {
+.activity-meter {
     position: absolute;
-    width: 250px;
-    height: 100px;
-    top: 10px;
+    top: 0;
     right: 0;
     display: flex;
     border: 1px solid #ddd;
-    border-radius: 5px 0 0 5px;
+    border-radius: 0 0 0 10px;
     background-color: #0b090c;
 }
 
-.activity-counter svg {
+.activity-meter svg {
     margin: 15px;
     width: 70px;
     height: 70px;
     cursor: pointer;
 }
 
-.activity-counter__icon:hover {
+.activity-meter__icon:hover {
     background: rgba(255, 255, 255, 0.05);
 }
 
-.activity-counter__display {
+.activity-meter__display {
     width: 150px;
     height: 100px;
 }
 
-.activity-counter__time {
+.activity-meter__time {
     width: 100%;
     height: 100%;
     display: flex;
     border-bottom: 1px solid #ddd;
 }
 
-.activity-counter__time div {
+.activity-meter__time div {
     width: 33.33%;
     height: 100%;
     display: flex;
@@ -72,7 +70,7 @@ body {
     border-left: 1px solid #ddd;
 }
 
-.activity-counter__time-and-activity {
+.activity-meter__time-and-activity {
     width: 100%;
     height: 60%;
     display: flex;
@@ -82,11 +80,11 @@ body {
     font-size: 20px;
 }
 
-.activity-counter__activity-name {
+.activity-meter__activity-name {
     font-size: 18px;
 }
 
-.activity-counter__btns {
+.activity-meter__btns {
     border-top: 1px solid #ddd;
     width: 100%;
     height: 40%;
@@ -95,11 +93,11 @@ body {
     border-left: 1px solid #ddd;
 }
 
-.activity-counter__btns button:last-child {
+.activity-meter__btns button:last-child {
     border-left: 1px solid #ddd;
 }
 
-.activity-counter__btns button {
+.activity-meter__btns button {
     width: 50%;
     height: 100%;
     display: flex;
@@ -108,7 +106,37 @@ body {
     font-size: 28px;
 }
 
-.activity-counter__btns button:hover {
+.activity-meter__btns button:hover {
     background: rgba(255, 255, 255, 0.05);
     font-size: 32px;
+}
+
+@keyframes activity-meter-fade {
+    0% { 
+        opacity: 1; 
+        width: 150px;
+    } 
+    50% {
+        opacity: 0;
+        width: 150px; 
+    }
+    100% {
+        opacity: 0;
+        width: 0;
+    }
+}
+
+@-webkit-keyframes activity-meter-fade {
+    0% { 
+        opacity: 1; 
+        width: 150px;
+    } 
+    50% {
+        opacity: 0;
+        width: 150px; 
+    }
+    100% {
+        opacity: 0;
+        width: 0;
+    }
 }
