@@ -1,6 +1,12 @@
 * {
     margin: 0;
     padding: 0;
+    color: #aaa;
+}
+
+button {
+    background: transparent;
+    border: none;
 }
 
 .app {
@@ -10,12 +16,40 @@
     background: #111;
 }
 
-.work-icon {
+.work-counter {
     position: absolute;
-    width: 100px;
-    height: 70px;
+    width: 200px;
+    height: 100px;
     top: 10px;
     right: 10px;
-    border: 1px dotted #ddd;
+    display: flex;
+    border: 1px solid #aaa;
     background-color: #111;
 }
+
+.work-counter svg {
+    margin: 15px;
+    width: 70px;
+    height: 70px;
+}
+
+.work-counter__time-and-btns {
+    width: 100px;
+    height: 100px;
+}
+
+.work-counter__time {
+    width: 100%;
+    height: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #aaa;
+}
+
+.work-counter__btns {
+    width: 100%;
+    height: 50%;
+    display: flex;
+}
+
