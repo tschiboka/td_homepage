@@ -2,18 +2,31 @@ const elems = {};
 const app = {
     activityMeter: {
         open: true,
-        animationIsRunning: false,
+        openCloseAnimationIsRunning: false,
+        timerIsRunning: false,
+        timerInterval: undefined,
+        timer: 0,
     }
 }
 
 
 
 function startHome() {
+    primeActiveMeterElements()
+
+    elems.activityMeter.addEventListener("click", e => handleActivityMeterClickEventDelegation(e));
+}
+
+
+
+function primeActiveMeterElements() {
     elems.activityMeter = document.querySelector(".activity-meter");
     elems.activityMeterIcon = document.querySelector(".activity-meter__icon");
     elems.activityMeterDisplay = document.querySelector(".activity-meter__display");
-
-    elems.activityMeter.addEventListener("click", e => handleActivityMeterClickEventDelegation(e));
+    elems.activityMeterStartStopBtn = document.querySelector(".activity-meter__start-stop-timer-btn");
+    elems.activityMeterHour = document.querySelector(".activity-meter__time > div:first-child");
+    elems.activityMeterMin = document.querySelector(".activity-meter__time > div:nth-child(2)");
+    elems.activityMeterSec = document.querySelector(".activity-meter__time > div:last-child");
 }
 
 
@@ -22,19 +35,19 @@ function handleActivityMeterClickEventDelegation(e) {
     const origin = (e.target.classList[0] || "").replace(/activity-meter__/g, "");
 
     switch (origin) {
-        case "icon": { }
+        case "icon": { } // intentional fallthrough!
         case "icon-box": { }
-        case "icon-part": { handleActivityMeterClick(); break; }
+        case "icon-part": { handleActivityMeterIconClick(); break; }
+        case "start-stop-timer-btn": { handleActivityMeterStartStopBtnClick() }
     }
-    console.log(origin);
 }
 
 
 
-function handleActivityMeterClick() {
-    if (app.animationIsRunning) return void 0;
+function handleActivityMeterIconClick() {
+    if (app.activityMeter.openCloseAnimationIsRunning) return void 0;
 
-    app.animationIsRunning = true;
+    app.openCloseAnimationIsRunning = true;
 
     if (app.activityMeter.open) {
         elems.activityMeterDisplay.style.animation = "activity-meter-fade 0.5s linear";
@@ -43,7 +56,7 @@ function handleActivityMeterClick() {
             elems.activityMeter.removeChild(document.querySelector(".activity-meter__display"));
             elems.activityMeterDisplay = clone;
             const timer2 = setTimeout(() => {
-                app.animationIsRunning = false;
+                app.activityMeter.openCloseAnimationIsRunning = false;
                 clearTimeout(timer2);
                 clearTimeout(timer1);
             }, 500);
@@ -59,11 +72,46 @@ function handleActivityMeterClick() {
                 elems.activityMeter.removeChild(document.querySelector(".activity-meter__display"));
                 clone.style.animation = "";
                 elems.activityMeter.appendChild(clone);
-                app.animationIsRunning = false;
+                app.activityMeter.openCloseAnimationIsRunning = false;
+                primeActiveMeterElements(); // all childs loosing references
                 clearTimeout(timer2);
                 clearTimeout(timer1);
             }, 500);
         }, 500);
     }
     app.activityMeter.open = !app.activityMeter.open;
+}
+
+
+
+function handleActivityMeterStartStopBtnClick() {
+    running = app.activityMeter.timerIsRunning;
+    app.activityMeter.timerIsRunning = !running;
+
+    if (app.activityMeter.timerIsRunning) {
+        elems.activityMeterStartStopBtn.innerHTML = "&#9632;";
+        elems.activityMeterStartStopBtn.title = "stop";
+        app.activityMeter.timerIsRunning = true;
+        app.activityMeter.timerInterval = setInterval(() => { incrementActivityMeterTimer(); }, 1000);
+    }
+    else {
+        elems.activityMeterStartStopBtn.innerHTML = "&#9658;";
+        elems.activityMeterStartStopBtn.title = "start";
+        app.activityMeter.timerIsRunning = false;
+        clearInterval(app.activityMeter.timerInterval);
+    }
+}
+
+
+
+function incrementActivityMeterTimer() {
+    ++app.activityMeter.timer;
+
+    const sec = app.activityMeter.timer % 60;
+    const min = Math.floor(app.activityMeter.timer / 60);
+    const hour = Math.floor(app.activityMeter.timer / 3600);
+
+    elems.activityMeterSec.innerHTML = sec + "s";
+    elems.activityMeterMin.innerHTML = min + "m";
+    elems.activityMeterHour.innerHTML = hour + "h";
 }
