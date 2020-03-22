@@ -6,20 +6,25 @@ const app = {
         timerIsRunning: false,
         timerInterval: undefined,
         timer: 0,
+        activityNames: JSON.parse(localStorage.activityMeter).map(e => e.name),
+        currentActivity: JSON.parse(localStorage.activityMeter).map(e => e.name)[0],
     }
 }
 
 
 
 function startHome() {
-    primeActiveMeterElements()
+    primeActivityMeterElements();
 
     elems.activityMeter.addEventListener("click", e => handleActivityMeterClickEventDelegation(e));
+    elems.activityMeterCurrentActivity.innerHTML = app.activityMeter.currentActivity;
+    app.activityMeter.prevTime = JSON.parse(localStorage.activityMeter).find(e => e.name === app.activityMeter.currentActivity).time;
+    displayActivityTime();
 }
 
 
 
-function primeActiveMeterElements() {
+function primeActivityMeterElements() {
     elems.activityMeter = document.querySelector(".activity-meter");
     elems.activityMeterIcon = document.querySelector(".activity-meter__icon");
     elems.activityMeterDisplay = document.querySelector(".activity-meter__display");
@@ -27,6 +32,7 @@ function primeActiveMeterElements() {
     elems.activityMeterHour = document.querySelector(".activity-meter__time > div:first-child");
     elems.activityMeterMin = document.querySelector(".activity-meter__time > div:nth-child(2)");
     elems.activityMeterSec = document.querySelector(".activity-meter__time > div:last-child");
+    elems.activityMeterCurrentActivity = document.querySelector(".activity-meter__activity-name");
 }
 
 
@@ -35,7 +41,7 @@ function handleActivityMeterClickEventDelegation(e) {
     const origin = (e.target.classList[0] || "").replace(/activity-meter__/g, "");
 
     switch (origin) {
-        case "icon": { } // intentional fallthrough!
+        case "icon": { } // intentional fall-through!
         case "icon-box": { }
         case "icon-part": { handleActivityMeterIconClick(); break; }
         case "start-stop-timer-btn": { handleActivityMeterStartStopBtnClick() }
@@ -73,7 +79,7 @@ function handleActivityMeterIconClick() {
                 clone.style.animation = "";
                 elems.activityMeter.appendChild(clone);
                 app.activityMeter.openCloseAnimationIsRunning = false;
-                primeActiveMeterElements(); // all childs loosing references
+                primeActivityMeterElements(); // all childs loosing references
                 clearTimeout(timer2);
                 clearTimeout(timer1);
             }, 500);
@@ -99,7 +105,21 @@ function handleActivityMeterStartStopBtnClick() {
         elems.activityMeterStartStopBtn.title = "start";
         app.activityMeter.timerIsRunning = false;
         clearInterval(app.activityMeter.timerInterval);
+        saveActivityTime();
     }
+}
+
+
+
+function displayActivityTime() {
+    const time = app.activityMeter.timer + Number(app.activityMeter.prevTime);
+    const hour = Math.floor(time / 3600);
+    const min = Math.floor((time % 3600) / 60);
+    const sec = time % 60;
+
+    elems.activityMeterSec.innerHTML = sec + "s";
+    elems.activityMeterMin.innerHTML = min + "m";
+    elems.activityMeterHour.innerHTML = hour + "h";
 }
 
 
@@ -107,11 +127,14 @@ function handleActivityMeterStartStopBtnClick() {
 function incrementActivityMeterTimer() {
     ++app.activityMeter.timer;
 
-    const sec = app.activityMeter.timer % 60;
-    const min = Math.floor(app.activityMeter.timer / 60);
-    const hour = Math.floor(app.activityMeter.timer / 3600);
+    displayActivityTime();
+}
 
-    elems.activityMeterSec.innerHTML = sec + "s";
-    elems.activityMeterMin.innerHTML = min + "m";
-    elems.activityMeterHour.innerHTML = hour + "h";
+
+
+function saveActivityTime() {
+    const storage = JSON.parse(localStorage.activityMeter);
+    const index = storage.findIndex(e => e.name === app.activityMeter.currentActivity);
+    storage[index].time = app.activityMeter.timer + Number(app.activityMeter.prevTime);
+    localStorage.setItem("activityMeter", JSON.stringify(storage));
 }
