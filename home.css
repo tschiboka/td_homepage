@@ -7,7 +7,7 @@
     margin: 0;
     padding: 0;
     color: #ddd;
-    box-sizing: content-box;
+    box-sizing: border-box;
     font-family: "Abel";
 }
 
@@ -31,10 +31,12 @@ body {
 .activity-meter {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 5px;
     max-height: 100px;
+    min-height: 100px;
     display: flex;
     border: 1px solid #ddd;
+    border-bottom: none;
     border-radius: 0 0 0 10px;
     background-color: #0b090c;
 }
@@ -46,13 +48,19 @@ body {
     cursor: pointer;
 }
 
+.activity-meter__icon-box {
+    border-bottom: 1px solid #ddd;
+    border-bottom-left-radius: 10px;
+}
+
 .activity-meter__icon-box:hover {
     background: rgba(255, 255, 255, 0.05);
 }
 
 .activity-meter__display {
-    width: 150px;
-    height: 100px;
+    width: 151px;
+    display: flex;
+    flex-direction: column;
 }
 
 .activity-meter__time {
@@ -103,11 +111,40 @@ body {
     height: 100%;
     display: flex;
     justify-content: center;
+    border-bottom: 1px solid #ddd;
     font-size: 28px;
 }
 
 .activity-meter__btns button:hover {
     background: rgba(255, 255, 255, 0.05);
+}
+
+.activity-meter__settings {
+    position: absolute;
+    display: none;
+    top: 100px;
+    right: 5px;
+    min-width: 150px;
+    background: #0b090c;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-bottom-left-radius: 10px;
+}
+
+.activity-meter__settings ul {
+    width: 150px;
+    list-style: none;
+}
+
+.activity-meter__settings ul li {
+    width: 150px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.activity-meter__settings ul li:hover {
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
 }
 
 @keyframes activity-meter-fade {

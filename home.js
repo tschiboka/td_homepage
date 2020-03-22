@@ -8,6 +8,7 @@ const app = {
         timer: 0,
         activityNames: JSON.parse(localStorage.activityMeter).map(e => e.name),
         currentActivity: JSON.parse(localStorage.activityMeter).map(e => e.name)[0],
+        settingsIsOpen: false,
     }
 }
 
@@ -33,6 +34,8 @@ function primeActivityMeterElements() {
     elems.activityMeterMin = document.querySelector(".activity-meter__time > div:nth-child(2)");
     elems.activityMeterSec = document.querySelector(".activity-meter__time > div:last-child");
     elems.activityMeterCurrentActivity = document.querySelector(".activity-meter__activity-name");
+    elems.activityMeterSettings = document.querySelector(".activity-meter__settings");
+    elems.activityMeterSettingsBtn = document.querySelector(".activity-meter__settings-btn");
 }
 
 
@@ -45,6 +48,7 @@ function handleActivityMeterClickEventDelegation(e) {
         case "icon-box": { }
         case "icon-part": { handleActivityMeterIconClick(); break; }
         case "start-stop-timer-btn": { handleActivityMeterStartStopBtnClick() }
+        case "settings-btn": { handleActivityMeterSettingsBtnClick() }
     }
 }
 
@@ -56,6 +60,9 @@ function handleActivityMeterIconClick() {
     app.openCloseAnimationIsRunning = true;
 
     if (app.activityMeter.open) {
+        elems.activityMeterSettings.style.display = "none";
+        elems.activityMeterSettingsBtn.style.borderBottom = "1px solid #ddd";
+        app.activityMeter.settingsIsOpen = false;
         elems.activityMeterDisplay.style.animation = "activity-meter-fade 0.5s linear";
         const timer1 = setTimeout(() => {
             const clone = elems.activityMeterDisplay.cloneNode(true);
@@ -137,4 +144,19 @@ function saveActivityTime() {
     const index = storage.findIndex(e => e.name === app.activityMeter.currentActivity);
     storage[index].time = app.activityMeter.timer + Number(app.activityMeter.prevTime);
     localStorage.setItem("activityMeter", JSON.stringify(storage));
+}
+
+
+
+function handleActivityMeterSettingsBtnClick() {
+    app.activityMeter.settingsIsOpen = !app.activityMeter.settingsIsOpen;
+
+    if (app.activityMeter.settingsIsOpen) {
+        elems.activityMeterSettings.style.display = "flex";
+        elems.activityMeterSettingsBtn.style.borderBottom = "none";
+    }
+    else {
+        elems.activityMeterSettings.style.display = "none";
+        elems.activityMeterSettingsBtn.style.borderBottom = "1px solid #ddd";
+    }
 }
