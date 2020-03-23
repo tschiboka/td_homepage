@@ -37,7 +37,7 @@ body {
     display: flex;
     border: 1px solid #ddd;
     border-bottom: none;
-    border-radius: 0 0 0 10px;
+    border-radius: 0 0 0 5px;
     background-color: #0b090c;
 }
 
@@ -50,7 +50,7 @@ body {
 
 .activity-meter__icon-box {
     border-bottom: 1px solid #ddd;
-    border-bottom-left-radius: 10px;
+    border-bottom-left-radius: 5px;
 }
 
 .activity-meter__icon-box:hover {
@@ -128,7 +128,7 @@ body {
     background: #0b090c;
     border: 1px solid #ddd;
     border-top: none;
-    border-bottom-left-radius: 10px;
+    border-bottom-left-radius: 5px;
 }
 
 .activity-meter__settings ul {
@@ -138,13 +138,23 @@ body {
 
 .activity-meter__settings ul li {
     width: 150px;
-    font-size: 20px;
+    font-size: 16px;
     text-align: center;
 }
 
 .activity-meter__settings ul li:hover {
     background: rgba(255, 255, 255, 0.05);
     cursor: pointer;
+}
+
+.activity-meter__activities {
+    position: absolute;
+    display: none;
+    width: 150px;
+    top: 150px;
+    right: 150px;
+    background: #0b090c;
+    border: 1px solid #ddd;
 }
 
 @keyframes activity-meter-fade {

@@ -1,7 +1,7 @@
 const elems = {};
 const app = {
     activityMeter: {
-        open: true,
+        open: false,
         openCloseAnimationIsRunning: false,
         timerIsRunning: false,
         timerInterval: undefined,
@@ -9,6 +9,7 @@ const app = {
         activityNames: JSON.parse(localStorage.activityMeter).map(e => e.name),
         currentActivity: JSON.parse(localStorage.activityMeter).map(e => e.name)[0],
         settingsIsOpen: false,
+        settingsActivitiesMenuIsOpen: false,
     }
 }
 
@@ -17,10 +18,11 @@ const app = {
 function startHome() {
     primeActivityMeterElements();
 
-    elems.activityMeter.addEventListener("click", e => handleActivityMeterClickEventDelegation(e));
+    document.addEventListener("click", e => handleClickEvents(e));
     elems.activityMeterCurrentActivity.innerHTML = app.activityMeter.currentActivity;
     app.activityMeter.prevTime = JSON.parse(localStorage.activityMeter).find(e => e.name === app.activityMeter.currentActivity).time;
     displayActivityTime();
+    renderActivityList();
 }
 
 
@@ -36,6 +38,15 @@ function primeActivityMeterElements() {
     elems.activityMeterCurrentActivity = document.querySelector(".activity-meter__activity-name");
     elems.activityMeterSettings = document.querySelector(".activity-meter__settings");
     elems.activityMeterSettingsBtn = document.querySelector(".activity-meter__settings-btn");
+    elems.activityMeterActivitiesMenu = document.querySelector(".activity-meter__activities");
+    elems.activityMeterActivityList = document.querySelector(".activity-meter__activities__activity-list");
+}
+
+
+
+function handleClickEvents(e) {
+    // activity meter
+    if ((Array.from(e.target.classList) || []).find(cl => /activity-meter/g.test(cl))) handleActivityMeterClickEventDelegation(e);
 }
 
 
@@ -43,12 +54,17 @@ function primeActivityMeterElements() {
 function handleActivityMeterClickEventDelegation(e) {
     const origin = (e.target.classList[0] || "").replace(/activity-meter__/g, "");
 
+    console.log(origin);
+
     switch (origin) {
         case "icon": { } // intentional fall-through!
         case "icon-box": { }
         case "icon-part": { handleActivityMeterIconClick(); break; }
-        case "start-stop-timer-btn": { handleActivityMeterStartStopBtnClick() }
-        case "settings-btn": { handleActivityMeterSettingsBtnClick() }
+        case "start-stop-timer-btn": { handleActivityMeterStartStopBtnClick(); break; }
+        case "settings-btn": { handleActivityMeterSettingsBtnClick(); break; }
+        case "settings__close": { closeActivityMeter(); break; }
+        case "settings__activities": { openCloseSettingsActivity(); break; }
+        case "activities__add-btn": { addActivity(); break; }
     }
 }
 
@@ -59,40 +75,48 @@ function handleActivityMeterIconClick() {
 
     app.openCloseAnimationIsRunning = true;
 
-    if (app.activityMeter.open) {
-        elems.activityMeterSettings.style.display = "none";
-        elems.activityMeterSettingsBtn.style.borderBottom = "1px solid #ddd";
-        app.activityMeter.settingsIsOpen = false;
-        elems.activityMeterDisplay.style.animation = "activity-meter-fade 0.5s linear";
-        const timer1 = setTimeout(() => {
-            const clone = elems.activityMeterDisplay.cloneNode(true);
+    if (app.activityMeter.open) closeActivityMeter();
+    else openActivityMeter();
+}
+
+
+function openActivityMeter() {
+    elems.activityMeter.appendChild(elems.activityMeterDisplay);
+    elems.activityMeterDisplay.style.animation = "activity-meter-fade 0.5s linear reverse";
+    const timer1 = setTimeout(() => {
+        const clone = elems.activityMeterDisplay.cloneNode(true);
+        elems.activityMeterDisplay = clone;
+        const timer2 = setTimeout(() => {
             elems.activityMeter.removeChild(document.querySelector(".activity-meter__display"));
-            elems.activityMeterDisplay = clone;
-            const timer2 = setTimeout(() => {
-                app.activityMeter.openCloseAnimationIsRunning = false;
-                clearTimeout(timer2);
-                clearTimeout(timer1);
-            }, 500);
+            clone.style.animation = "";
+            elems.activityMeter.appendChild(clone);
+            app.activityMeter.openCloseAnimationIsRunning = false;
+            primeActivityMeterElements(); // all childs loosing references
+            app.activityMeter.open = true;
+            clearTimeout(timer2);
+            clearTimeout(timer1);
         }, 500);
-    }
-    else {
-        elems.activityMeter.appendChild(elems.activityMeterDisplay);
-        elems.activityMeterDisplay.style.animation = "activity-meter-fade 0.5s linear reverse";
-        const timer1 = setTimeout(() => {
-            const clone = elems.activityMeterDisplay.cloneNode(true);
-            elems.activityMeterDisplay = clone;
-            const timer2 = setTimeout(() => {
-                elems.activityMeter.removeChild(document.querySelector(".activity-meter__display"));
-                clone.style.animation = "";
-                elems.activityMeter.appendChild(clone);
-                app.activityMeter.openCloseAnimationIsRunning = false;
-                primeActivityMeterElements(); // all childs loosing references
-                clearTimeout(timer2);
-                clearTimeout(timer1);
-            }, 500);
+    }, 500);
+}
+
+
+
+function closeActivityMeter() {
+    elems.activityMeterSettings.style.display = "none";
+    elems.activityMeterSettingsBtn.style.borderBottom = "1px solid #ddd";
+    app.activityMeter.settingsIsOpen = false;
+    elems.activityMeterDisplay.style.animation = "activity-meter-fade 0.5s linear";
+    const timer1 = setTimeout(() => {
+        const clone = elems.activityMeterDisplay.cloneNode(true);
+        elems.activityMeter.removeChild(document.querySelector(".activity-meter__display"));
+        elems.activityMeterDisplay = clone;
+        const timer2 = setTimeout(() => {
+            app.activityMeter.openCloseAnimationIsRunning = false;
+            app.activityMeter.open = false;
+            clearTimeout(timer2);
+            clearTimeout(timer1);
         }, 500);
-    }
-    app.activityMeter.open = !app.activityMeter.open;
+    }, 500);
 }
 
 
@@ -159,4 +183,29 @@ function handleActivityMeterSettingsBtnClick() {
         elems.activityMeterSettings.style.display = "none";
         elems.activityMeterSettingsBtn.style.borderBottom = "1px solid #ddd";
     }
+}
+
+
+
+function openCloseSettingsActivity() {
+    app.activityMeter.settingsActivitiesMenuIsOpen = !app.activityMeter.settingsActivitiesMenuIsOpen;
+
+    if (app.activityMeter.settingsActivitiesMenuIsOpen) { elems.activityMeterActivitiesMenu.style.display = "flex"; }
+    else { elems.activityMeterActivitiesMenu.style.display = "none"; }
+}
+
+
+
+function renderActivityList() {
+    app.activityMeter.activityNames.map(act => {
+        const div = document.createElement("li");
+        div.innerHTML = act;
+        elems.activityMeterActivityList.appendChild(div);
+    });
+}
+
+
+
+function addActivity() {
+
 }
