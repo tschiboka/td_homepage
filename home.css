@@ -31,7 +31,7 @@ body {
 .activity-meter {
     position: absolute;
     top: 0;
-    right: 5px;
+    right: 0;
     max-height: 100px;
     min-height: 100px;
     display: flex;
@@ -58,7 +58,7 @@ body {
 }
 
 .activity-meter__display {
-    width: 151px;
+    width: 150px;
     display: flex;
     flex-direction: column;
 }
@@ -123,7 +123,7 @@ body {
     position: absolute;
     display: none;
     top: 100px;
-    right: 5px;
+    right: 0;
     min-width: 150px;
     background: #0b090c;
     border: 1px solid #ddd;
@@ -150,11 +150,69 @@ body {
 .activity-meter__activities {
     position: absolute;
     display: none;
+    flex-direction: column;
     width: 150px;
-    top: 150px;
-    right: 150px;
+    top: 100px;
+    right: 151px;
     background: #0b090c;
     border: 1px solid #ddd;
+    border-bottom-left-radius: 5px;
+}
+
+.activity-meter__activities > div:first-child {
+    width: 100%;
+    display: flex;
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+.activity-meter__activities > div > button {
+    width: 50%;
+    height: 20px;
+}
+
+.activity-meter__activities > div > button:first-child { 
+    border-right: 1px solid #ddd; 
+}
+
+.activity-meter__activities > div button:hover {
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+}
+
+.activity-meter__activities ul {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-meter__activities ul li {
+    text-align: center;
+    list-style: none;
+    cursor: pointer;
+}
+
+.activity-meter__activities ul li:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.activity-meter__activities__input-box {
+    display: none;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+}
+
+.activity-meter__activities__input-box input {
+    width: 70%;
+    background: #2f2633;
+    border: none;
+    color: #ddd;
+    font-size: 16px;
+    text-align: center;
+}
+
+.activity-meter__activities__input-box button {
+    width: 30%;
+    border: none;
 }
 
 @keyframes activity-meter-fade {

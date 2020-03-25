@@ -10,6 +10,7 @@ const app = {
         currentActivity: JSON.parse(localStorage.activityMeter).map(e => e.name)[0],
         settingsIsOpen: false,
         settingsActivitiesMenuIsOpen: false,
+        activitiesMenuInputIsOpen: false,
     }
 }
 
@@ -40,6 +41,9 @@ function primeActivityMeterElements() {
     elems.activityMeterSettingsBtn = document.querySelector(".activity-meter__settings-btn");
     elems.activityMeterActivitiesMenu = document.querySelector(".activity-meter__activities");
     elems.activityMeterActivityList = document.querySelector(".activity-meter__activities__activity-list");
+    elems.activityMeterActivityInputBox = document.querySelector(".activity-meter__activities__input-box");
+    elems.activityMeterActivityInput = document.querySelector(".activity-meter__activities__input-box > input");
+    elems.activityMeterActivityInputOKBtn = document.querySelector(".activity-meter__activities__input-box > button");
 }
 
 
@@ -64,7 +68,9 @@ function handleActivityMeterClickEventDelegation(e) {
         case "settings-btn": { handleActivityMeterSettingsBtnClick(); break; }
         case "settings__close": { closeActivityMeter(); break; }
         case "settings__activities": { openCloseSettingsActivity(); break; }
-        case "activities__add-btn": { addActivity(); break; }
+        case "activities__add-btn": { showActivitiesInput(); break; }
+        case "activities__OK-btn": { addNewActivity(); break; }
+        case "activities__activity-list__item": { setActivity(e.target); break; }
     }
 }
 
@@ -197,15 +203,50 @@ function openCloseSettingsActivity() {
 
 
 function renderActivityList() {
-    app.activityMeter.activityNames.map(act => {
+    // empty activity list first in order not to push them multiple times
+    if (elems.activityMeterActivityList.getElementsByTagName("li").length) {
+        while (elems.activityMeterActivityList.firstChild) { elems.activityMeterActivityList.removeChild(elems.activityMeterActivityList.lastChild); }
+    }
+
+    app.activityMeter.activityNames.sort().map(act => {
         const div = document.createElement("li");
         div.innerHTML = act;
+        div.classList = "activity-meter__activities__activity-list__item"
+        div.setAttribute("data-activity", act);
         elems.activityMeterActivityList.appendChild(div);
     });
 }
 
 
 
-function addActivity() {
+function showActivitiesInput() {
+    app.activityMeter.activitiesMenuInputIsOpen = !app.activityMeter.activitiesMenuInputIsOpen;
 
+    if (app.activityMeter.activitiesMenuInputIsOpen) elems.activityMeterActivityInputBox.style.display = "flex";
+    else elems.activityMeterActivityInputBox.style.display = "none";
+}
+
+
+
+function addNewActivity() {
+    const inputVal = elems.activityMeterActivityInput.value;
+    if (!inputVal) return void (0);
+
+    let storage = JSON.parse(localStorage.activityMeter);
+    storage.push({ name: inputVal, time: "0" });
+    storage = JSON.stringify(storage);
+    localStorage.setItem("activityMeter", storage);
+    app.activityMeter.activityNames = JSON.parse(localStorage.activityMeter).map(e => e.name);
+
+    elems.activityMeterActivityInput.value = "";
+    elems.activityMeterActivityInputBox.style.display = "none";
+    renderActivityList();
+}
+
+
+
+function setActivity(target) {
+    const newActivity = target.getAttribute("data-activity");
+    app.activityMeter.currentActivity = newActivity;
+    elems.activityMeterCurrentActivity.innerHTML = newActivity;
 }
